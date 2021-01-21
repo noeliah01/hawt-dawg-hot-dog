@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Hot dogs == sandwiches?</title>
+        <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-firestore.js"></script>
+    </head>
+    <body>
+        <h1 id="hotDogOutput">Hot dog status:</h1>
+        <input type="textfield" id="latestHotDogStatus"/>
+        <button id="saveButton">Save</button>
+        <button id="loadButton">Load</button>
+
+        <!--Unlike the video tutorial, we are keeping all our javascript inline in our html file.-->
+        <script>
+
+            // Replace with your web app's Firebase configuration
+            var firebaseConfig = {
+                aapiKey: "AIzaSyBJ30DVu_grXcGmGDlXtmXTMtUvyjc18lg",
+                authDomain: "intro-to-webdev-proj.firebaseapp.com",
+                projectId: "intro-to-webdev-proj",
+                storageBucket: "intro-to-webdev-proj.appspot.com",
+                messagingSenderId: "790606764198",
+                appId: "1:790606764198:web:b2a31d010ec8ab5ead7c67"
+            };
+
+            // Initialize our application
+            firebase.initializeApp(firebaseConfig);
+            var firestore = firebase.firestore();
+
+            //CRUD - create, read, update, delete
+
+            var docRef = firestore.doc("sample/sandwichdata")
+            var outputHandler = document.getElementById("hotDogOutput")
+            var inputTextField = document.getElementById("latestHotDogStatus")
+            var saveButton = document.getElementById("saveButton")
+            var loadButton = document.getElementById("loadButton")
+
+            saveButton.addEventListener("click", function() {
+                var textToSave = inputTextField.value;
+
+                docRef.set({
+                    hotDogStatus: textToSave
+                }).then(function() {
+                    console.log("Status Saved!");
+                }).catch(function(error){
+                    console.log("Got and error:", error);
+                });
+            })
+
+            loadButton.addEventListener("click", function() {
+                docRef.get().then(function (doc) {
+                    if(doc && doc.data) {
+                        var myData = doc.data();
+                        outputHandler.innerText = "Hot Dog status: " + myData.hotDogStatus;
+                    }
+                }).catch(function (error) {
+                    console.log("Got an error:", error)
+                });
+            });
+
+            getRealTimeUpdates = function() {
+                docRef.onSnapshot(function (doc) {
+                    if(doc && doc.data) {
+                        var myData = doc.data();
+                        outputHandler.innerText = "Hot Dog status: " + myData.hotDogStatus;
+                    }
+                });
+            }
+
+            getRealTimeUpdates();
+        </script>
+    </body>
+</html>
